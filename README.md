@@ -8,7 +8,8 @@ Extract AI is an application that allows users to input any public URL and extra
 - Generate concise summaries and key points
 - View content in a Notion-like table view
 - Search and filter extracted content
-- Store extraction history in the browser
+- User authentication with Supabase
+- Store extraction history in user accounts
 
 ## Technology Stack
 
@@ -16,6 +17,7 @@ Extract AI is an application that allows users to input any public URL and extra
 - [React](https://react.dev) - UI library
 - [shadcn/ui](https://ui.shadcn.com) - Component library
 - [Anthropic Claude API](https://anthropic.com/claude) - AI model
+- [Supabase](https://supabase.com) - Authentication & Database
 - [Tailwind CSS](https://tailwindcss.com) - Styling
 - [Vercel](https://vercel.com) - Deployment
 
@@ -25,6 +27,7 @@ Extract AI is an application that allows users to input any public URL and extra
 
 - Node.js 18+ installed
 - Anthropic API key ([Get one here](https://www.anthropic.com/api))
+- Supabase account and project ([Create one here](https://supabase.com))
 
 ### Installation
 
@@ -47,6 +50,8 @@ Create a `.env.local` file in the root directory with the following:
 
 ```
 ANTHROPIC_API_KEY=your_anthropic_api_key_here
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
 
 4. Run the development server:
@@ -57,13 +62,33 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the application.
 
+### Supabase Setup
+
+1. Create a new Supabase project
+2. Navigate to Authentication → Settings and ensure Email Auth is enabled
+3. Copy your project URL and anon key from the project settings
+4. Paste these values in your `.env.local` file
+
+## Authentication Flow
+
+The application implements a complete authentication flow:
+
+1. Sign up with email and password
+2. Sign in with existing credentials
+3. Password reset functionality
+4. Protected routes using middleware
+5. User session management
+
 ## Deployment
 
 The application can be easily deployed to Vercel:
 
 1. Push your code to a GitHub repository
 2. Connect your repository to Vercel
-3. Add your `ANTHROPIC_API_KEY` as an environment variable in the Vercel dashboard
+3. Add your environment variables in the Vercel dashboard:
+   - `ANTHROPIC_API_KEY`
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 4. Deploy!
 
 ## License
