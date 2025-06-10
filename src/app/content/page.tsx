@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { ContentItem } from "@/components/content-table";
 import { columns } from "@/components/content-columns";
 import { DataTable } from "@/components/ui/data-table";
@@ -14,6 +14,7 @@ import { ContentChat } from "@/components/content-chat";
 import { NotionTable } from "@/components/notion-table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MessageSquare, Table2, List } from "lucide-react";
+import { UserDropdown } from "@/components/user-dropdown";
 
 export default function ContentPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -30,6 +31,12 @@ export default function ContentPage() {
     setContentItems(getStoredContent());
   }, []);
 
+  const handleDeleteItem = useCallback((id: string) => {
+    deleteContent(id);
+    setContentItems((prevItems) => prevItems.filter((item) => item.id !== id));
+    toast.success("Content deleted");
+  }, []);
+
   // Listen for delete events from the data table
   useEffect(() => {
     const handleDeleteContent = (event: CustomEvent<string>) => {
@@ -41,7 +48,7 @@ export default function ContentPage() {
     return () => {
       window.removeEventListener('delete-content', handleDeleteContent as EventListener);
     };
-  }, [contentItems]);
+  }, [handleDeleteItem]);
 
   const handleUrlSubmit = async (url: string) => {
     setIsLoading(true);
@@ -85,12 +92,6 @@ export default function ContentPage() {
     }
   };
 
-  const handleDeleteItem = (id: string) => {
-    deleteContent(id);
-    setContentItems(contentItems.filter((item) => item.id !== id));
-    toast.success("Content deleted");
-  };
-
   const handleModelChange = (model: AIModel) => {
     setSelectedModel(model);
     toast.info(`Model changed to ${model.name}`);
@@ -107,7 +108,10 @@ export default function ContentPage() {
             Extract and summarize content from any URL using AI
           </p>
         </div>
-        <ThemeToggler />
+        <div className="flex items-center gap-4">
+          <ThemeToggler />
+          <UserDropdown />
+        </div>
       </div>
 
       <div className="grid gap-8 md:grid-cols-[1fr_3fr]">
