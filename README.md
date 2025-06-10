@@ -1,36 +1,71 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Extract AI - Content Summarizer
+
+Extract AI is an application that allows users to input any public URL and extract content using AI to generate summaries and key points. The application leverages Claude Sonnet 3.7 for intelligent content extraction and summarization.
+
+## Features
+
+- Input any public URL to extract and summarize content
+- Generate concise summaries and key points
+- View content in a Notion-like table view
+- Search and filter extracted content
+- Store extraction history in the browser
+
+## Technology Stack
+
+- [Next.js](https://nextjs.org) - React framework
+- [React](https://react.dev) - UI library
+- [shadcn/ui](https://ui.shadcn.com) - Component library
+- [Anthropic Claude API](https://anthropic.com/claude) - AI model
+- [Tailwind CSS](https://tailwindcss.com) - Styling
+- [Vercel](https://vercel.com) - Deployment
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 18+ installed
+- Anthropic API key ([Get one here](https://www.anthropic.com/api))
+
+### Installation
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/yourusername/extract-ai.git
+cd extract-ai
+```
+
+2. Install dependencies:
+
+```bash
+npm install
+```
+
+3. Set up environment variables:
+
+Create a `.env.local` file in the root directory with the following:
+
+```
+ANTHROPIC_API_KEY=your_anthropic_api_key_here
+```
+
+4. Run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the application.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Deployment
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The application can be easily deployed to Vercel:
 
-## Learn More
+1. Push your code to a GitHub repository
+2. Connect your repository to Vercel
+3. Add your `ANTHROPIC_API_KEY` as an environment variable in the Vercel dashboard
+4. Deploy!
 
-To learn more about Next.js, take a look at the following resources:
+## License
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+MIT
