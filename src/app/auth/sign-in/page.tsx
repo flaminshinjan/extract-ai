@@ -7,6 +7,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
+import { AlertTriangle } from "lucide-react";
 
 const signInSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -18,11 +19,14 @@ type SignInFormValues = z.infer<typeof signInSchema>;
 export default function SignIn() {
   const [isLoading, setIsLoading] = useState(false);
   const [redirecting, setRedirecting] = useState(false);
+  const [verificationNeeded, setVerificationNeeded] = useState(false);
+  const [unverifiedEmail, setUnverifiedEmail] = useState("");
   
   const {
     register,
     handleSubmit,
     formState: { errors },
+    getValues,
   } = useForm<SignInFormValues>({
     resolver: zodResolver(signInSchema),
     defaultValues: {
@@ -30,6 +34,33 @@ export default function SignIn() {
       password: "",
     },
   });
+
+  const resendVerificationEmail = async () => {
+    try {
+      const email = unverifiedEmail || getValues("email");
+      
+      if (!email) {
+        toast.error("Please enter an email address");
+        return;
+      }
+      
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/verify-email`,
+        }
+      });
+      
+      if (error) {
+        toast.error(error.message || "Failed to resend verification email");
+      } else {
+        toast.success("Verification email sent! Please check your inbox");
+      }
+    } catch (error: any) {
+      toast.error(error.message || "An unexpected error occurred");
+    }
+  };
 
   const onSubmit = async (data: SignInFormValues) => {
     setIsLoading(true);
@@ -41,7 +72,15 @@ export default function SignIn() {
       });
       
       if (error) {
-        toast.error(error.message || "Failed to sign in");
+        // Check for email not confirmed error
+        if (error.message?.includes("Email not confirmed") || 
+            error.message?.includes("not verified") ||
+            error.message?.includes("not confirmed")) {
+          setUnverifiedEmail(data.email);
+          setVerificationNeeded(true);
+        } else {
+          toast.error(error.message || "Failed to sign in");
+        }
         setIsLoading(false);
       } else {
         // Store auth data in localStorage
@@ -87,6 +126,46 @@ export default function SignIn() {
               If you're not redirected automatically, {" "}
               <a href="/content" className="font-medium underline">click here</a>
             </p>
+          </div>
+        ) : verificationNeeded ? (
+          <div className="text-center space-y-4">
+            <div className="flex justify-center">
+              <div className="rounded-full bg-amber-100 p-3">
+                <AlertTriangle className="h-8 w-8 text-amber-600" />
+              </div>
+            </div>
+            
+            <h2 className="text-xl font-semibold text-foreground">Email verification required</h2>
+            
+            <div className="p-4 bg-amber-50 border border-amber-200 rounded-md">
+              <p className="text-amber-800">
+                Your email <span className="font-medium">{unverifiedEmail}</span> needs to be verified.
+              </p>
+              <p className="mt-2 text-sm text-amber-600">
+                Please check your inbox for the verification link to complete your registration.
+              </p>
+            </div>
+            
+            <div className="mt-4 text-sm text-muted-foreground">
+              <p className="mt-2">
+                Didn't receive an email? Check your spam folder or{" "}
+                <button 
+                  onClick={resendVerificationEmail}
+                  className="text-primary hover:underline"
+                >
+                  resend verification email
+                </button>
+              </p>
+            </div>
+            
+            <div className="mt-4">
+              <button 
+                onClick={() => setVerificationNeeded(false)}
+                className="text-primary hover:underline"
+              >
+                Return to sign in
+              </button>
+            </div>
           </div>
         ) : (
           <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>

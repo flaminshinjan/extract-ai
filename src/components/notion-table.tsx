@@ -29,9 +29,9 @@ interface ColumnWidth {
 
 const defaultColumnWidths = {
   title: 20,
-  keyPoints: 40,
+  keyPoints: 35,
   summary: 35,
-  actions: 5
+  actions: 10
 };
 
 export function NotionTable({ items, onDeleteItem }: NotionTableProps) {
@@ -195,16 +195,18 @@ export function NotionTable({ items, onDeleteItem }: NotionTableProps) {
                 <td style={columnStyle('summary')} className="py-3 px-4 align-top">
                   <p className="text-xs break-words">{item.summary}</p>
                 </td>
-                <td style={columnStyle('actions')} className="py-3 px-4 text-center align-top">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => onDeleteItem(item.id)}
-                    className="h-8 w-8"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                    <span className="sr-only">Delete</span>
-                  </Button>
+                <td style={columnStyle('actions')} className="py-3 px-4 text-center align-top min-w-[60px]">
+                  <div className="flex justify-center">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => onDeleteItem(item.id)}
+                      className="h-8 w-8"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                      <span className="sr-only">Delete</span>
+                    </Button>
+                  </div>
                 </td>
               </tr>
             ))}

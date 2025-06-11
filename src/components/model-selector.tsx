@@ -5,17 +5,12 @@ import { Check, ChevronsUpDown, Sparkles, Brain } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-} from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 export type AIModel = {
   id: string;
@@ -67,9 +62,14 @@ export function ModelSelector({ onModelChange, selectedModelId }: ModelSelectorP
   
   const selectedModel = models.find(model => model.id === selectedModelId) || models[0];
 
+  const handleSelectModel = (model: AIModel) => {
+    onModelChange(model);
+    setOpen(false);
+  };
+
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
         <Button
           variant="outline"
           role="combobox"
@@ -86,73 +86,73 @@ export function ModelSelector({ onModelChange, selectedModelId }: ModelSelectorP
           </div>
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-full p-0">
-        <Command>
-          <CommandInput placeholder="Search models..." />
-          <CommandEmpty>No model found.</CommandEmpty>
-          <CommandGroup>
-            <div className="font-medium text-xs text-muted-foreground px-2 py-1 border-b">
-              Anthropic
-            </div>
-            {models
-              .filter(model => model.provider === "anthropic")
-              .map((model) => (
-                <CommandItem
-                  key={model.id}
-                  value={model.id}
-                  onSelect={() => {
-                    onModelChange(model);
-                    setOpen(false);
-                  }}
-                >
-                  <div className="flex flex-col w-full">
-                    <div className="flex items-center gap-2">
-                      <Sparkles className="h-4 w-4 text-purple-500" />
-                      <span>{model.name}</span>
-                      <Check
-                        className={cn(
-                          "ml-auto h-4 w-4",
-                          selectedModelId === model.id ? "opacity-100" : "opacity-0"
-                        )}
-                      />
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle className="text-xl">Select AI Model</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-6 py-4">
+          <div>
+            <h3 className="flex items-center gap-2 mb-3 text-sm font-medium">
+              <Sparkles className="h-4 w-4 text-purple-500" />
+              <span>Anthropic</span>
+            </h3>
+            <div className="space-y-2">
+              {models
+                .filter(model => model.provider === "anthropic")
+                .map((model) => (
+                  <Button
+                    key={model.id}
+                    variant={selectedModelId === model.id ? "default" : "ghost"}
+                    className="w-full justify-start text-left h-auto py-3"
+                    onClick={() => handleSelectModel(model)}
+                  >
+                    <div className="flex w-full items-start">
+                      <Sparkles className="mr-3 h-4 w-4 text-purple-500 mt-0.5" />
+                      <div className="flex-1">
+                        <div className="font-medium">{model.name}</div>
+                        <div className="text-xs text-muted-foreground mt-1">{model.description}</div>
+                      </div>
+                      {selectedModelId === model.id && (
+                        <Check className="h-4 w-4 ml-2 shrink-0" />
+                      )}
                     </div>
-                    <p className="text-xs text-muted-foreground ml-6">{model.description}</p>
-                  </div>
-                </CommandItem>
-              ))}
-            <div className="font-medium text-xs text-muted-foreground px-2 py-1 border-b mt-2">
-              OpenAI
+                  </Button>
+                ))}
             </div>
-            {models
-              .filter(model => model.provider === "openai")
-              .map((model) => (
-                <CommandItem
-                  key={model.id}
-                  value={model.id}
-                  onSelect={() => {
-                    onModelChange(model);
-                    setOpen(false);
-                  }}
-                >
-                  <div className="flex flex-col w-full">
-                    <div className="flex items-center gap-2">
-                      <Brain className="h-4 w-4 text-green-500" />
-                      <span>{model.name}</span>
-                      <Check
-                        className={cn(
-                          "ml-auto h-4 w-4",
-                          selectedModelId === model.id ? "opacity-100" : "opacity-0"
-                        )}
-                      />
+          </div>
+          
+          <div>
+            <h3 className="flex items-center gap-2 mb-3 text-sm font-medium">
+              <Brain className="h-4 w-4 text-green-500" />
+              <span>OpenAI</span>
+            </h3>
+            <div className="space-y-2">
+              {models
+                .filter(model => model.provider === "openai")
+                .map((model) => (
+                  <Button
+                    key={model.id}
+                    variant={selectedModelId === model.id ? "default" : "ghost"}
+                    className="w-full justify-start text-left h-auto py-3"
+                    onClick={() => handleSelectModel(model)}
+                  >
+                    <div className="flex w-full items-start">
+                      <Brain className="mr-3 h-4 w-4 text-green-500 mt-0.5" />
+                      <div className="flex-1">
+                        <div className="font-medium">{model.name}</div>
+                        <div className="text-xs text-muted-foreground mt-1">{model.description}</div>
+                      </div>
+                      {selectedModelId === model.id && (
+                        <Check className="h-4 w-4 ml-2 shrink-0" />
+                      )}
                     </div>
-                    <p className="text-xs text-muted-foreground ml-6">{model.description}</p>
-                  </div>
-                </CommandItem>
-              ))}
-          </CommandGroup>
-        </Command>
-      </PopoverContent>
-    </Popover>
+                  </Button>
+                ))}
+            </div>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 } 
