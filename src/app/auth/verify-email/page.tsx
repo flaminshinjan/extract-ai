@@ -3,8 +3,17 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { CheckCircle2 } from "lucide-react";
+import { Suspense } from "react";
 
 export default function EmailVerified() {
+  return (
+    <Suspense fallback={<div className="flex min-h-screen items-center justify-center">Loading...</div>}>
+      <EmailVerifiedContent />
+    </Suspense>
+  );
+}
+
+function EmailVerifiedContent() {
   const searchParams = useSearchParams();
   const email = searchParams.get("email") || "your email";
 
