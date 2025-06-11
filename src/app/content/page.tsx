@@ -98,26 +98,26 @@ export default function ContentPage() {
   };
 
   return (
-    <main className="container mx-auto py-8 px-4 max-w-6xl">
+    <main className="container mx-auto py-4 sm:py-8 px-3 sm:px-4 max-w-full">
       <Toaster position="top-right" />
       
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8 gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Extract AI</h1>
-          <p className="mt-1 text-muted-foreground">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Extract AI</h1>
+          <p className="mt-1 text-sm sm:text-base text-muted-foreground">
             Extract and summarize content from any URL using AI
           </p>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 self-end sm:self-auto">
           <ThemeToggler />
           <UserDropdown />
         </div>
       </div>
 
-      <div className="grid gap-8 md:grid-cols-[1fr_3fr]">
+      <div className="grid gap-6 sm:gap-8 lg:grid-cols-[minmax(250px,_1fr)_minmax(0,_3fr)]">
         <div className="space-y-6">
-          <div className="rounded-lg border p-4">
-            <h2 className="text-lg font-medium mb-4">Extract Content</h2>
+          <div className="rounded-lg border p-3 sm:p-4">
+            <h2 className="text-lg font-medium mb-3 sm:mb-4">Extract Content</h2>
             <div className="space-y-4">
               <div>
                 <label className="text-sm font-medium mb-2 block">AI Model</label>
@@ -130,7 +130,7 @@ export default function ContentPage() {
             </div>
           </div>
           
-          <div className="rounded-lg border p-4">
+          <div className="rounded-lg border p-3 sm:p-4">
             <h2 className="text-lg font-medium mb-2">About</h2>
             <p className="text-sm text-muted-foreground">
               Extract AI uses advanced AI models to analyze web content and extract the most important information.
@@ -142,22 +142,25 @@ export default function ContentPage() {
           </div>
         </div>
         
-        <div>
-          <div className="flex justify-between items-center mb-4">
+        <div className="w-full min-w-0">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3 sm:gap-0">
             <h2 className="text-lg font-medium">Your Content</h2>
-            <Tabs defaultValue="notion">
-              <TabsList>
+            <Tabs defaultValue="notion" className="w-full sm:w-auto">
+              <TabsList className="grid grid-cols-3 w-full sm:w-auto">
                 <TabsTrigger value="notion">
                   <List className="h-4 w-4 mr-2" />
-                  Notion View
+                  <span className="hidden sm:inline">Notion View</span>
+                  <span className="sm:hidden">Notion</span>
                 </TabsTrigger>
                 <TabsTrigger value="chat">
                   <MessageSquare className="h-4 w-4 mr-2" />
-                  Chat View
+                  <span className="hidden sm:inline">Chat View</span>
+                  <span className="sm:hidden">Chat</span>
                 </TabsTrigger>
                 <TabsTrigger value="table">
                   <Table2 className="h-4 w-4 mr-2" />
-                  Table View
+                  <span className="hidden sm:inline">Table View</span>
+                  <span className="sm:hidden">Table</span>
                 </TabsTrigger>
               </TabsList>
             </Tabs>
