@@ -77,7 +77,7 @@ export function NotionTable({ items, onDeleteItem }: NotionTableProps) {
       return 0;
     });
 
-  // Calculate pagination
+  
   const totalPages = Math.ceil(sortedAndFilteredItems.length / itemsPerPage);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -233,7 +233,7 @@ export function NotionTable({ items, onDeleteItem }: NotionTableProps) {
             </Button>
             {Array.from({ length: totalPages }).map((_, index) => {
               const pageNumber = index + 1;
-              // Show limited page numbers with ellipsis
+              
               if (
                 pageNumber === 1 ||
                 pageNumber === totalPages ||
@@ -251,7 +251,7 @@ export function NotionTable({ items, onDeleteItem }: NotionTableProps) {
                   </Button>
                 );
               }
-              // Show ellipsis for skipped pages
+              
               if (
                 (pageNumber === 2 && currentPage > 3) ||
                 (pageNumber === totalPages - 1 && currentPage < totalPages - 2)

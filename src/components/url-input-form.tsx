@@ -46,7 +46,6 @@ export function UrlInputForm({ onUrlSubmit, isLoading }: UrlInputFormProps) {
   const [recentUrls, setRecentUrls] = useState<string[]>([]);
   const [mounted, setMounted] = useState(false);
 
-  // Load stored URLs after component mounts
   useEffect(() => {
     const storedUrls = localStorage.getItem("extract-ai-recent-urls");
     setRecentUrls(storedUrls ? JSON.parse(storedUrls) : []);
@@ -62,14 +61,14 @@ export function UrlInputForm({ onUrlSubmit, isLoading }: UrlInputFormProps) {
 
   const handleSubmit = async (values: UrlFormValues) => {
     try {
-      // Ensure URL has protocol
+      
       let url = values.url;
       if (!url.startsWith("http://") && !url.startsWith("https://")) {
         url = "https://" + url;
         form.setValue("url", url);
       }
 
-      // Save to recent URLs
+   
       if (!recentUrls.includes(url)) {
         const updatedUrls = [url, ...recentUrls].slice(0, 5);
         setRecentUrls(updatedUrls);

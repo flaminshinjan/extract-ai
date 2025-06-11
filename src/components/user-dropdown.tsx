@@ -24,7 +24,7 @@ export function UserDropdown() {
     setIsLoading(true);
     try {
       await signOut();
-      // Force redirect to sign-in page
+      
       window.location.href = "/auth/sign-in";
     } catch (error) {
       console.error("Error signing out:", error);
@@ -33,7 +33,7 @@ export function UserDropdown() {
     }
   };
 
-  // Get user initials for avatar fallback
+  
   const getInitials = () => {
     if (!user.email) return "U";
     return user.email.substring(0, 2).toUpperCase();

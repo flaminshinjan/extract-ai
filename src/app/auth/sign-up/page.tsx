@@ -44,7 +44,6 @@ export default function SignUp() {
   const onSubmit = async (data: SignUpFormValues) => {
     setIsLoading(true);
     try {
-      // Configure Supabase to send verification emails
       const { data: authData, error } = await supabase.auth.signUp({
         email: data.email,
         password: data.password,

@@ -26,7 +26,7 @@ export default function ContentPage() {
     description: "Balanced model for various tasks from Anthropic",
   });
 
-  // Load stored content on initial render
+  
   useEffect(() => {
     setContentItems(getStoredContent());
   }, []);
@@ -37,7 +37,7 @@ export default function ContentPage() {
     toast.success("Content deleted");
   }, []);
 
-  // Listen for delete events from the data table
+  
   useEffect(() => {
     const handleDeleteContent = (event: CustomEvent<string>) => {
       handleDeleteItem(event.detail);
@@ -74,7 +74,7 @@ export default function ContentPage() {
         throw new Error(data.error || "Failed to extract content");
       }
 
-      // Store the content
+      
       storeContent(data);
       setContentItems((items) => [data, ...items.filter(item => item.id !== data.id)]);
       toast.success("Content extracted successfully", { id: "extract-toast" });
@@ -143,28 +143,7 @@ export default function ContentPage() {
         </div>
         
         <div className="w-full min-w-0">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3 sm:gap-0">
-            <h2 className="text-lg font-medium">Your Content</h2>
-            <Tabs defaultValue="notion" className="w-full sm:w-auto">
-              <TabsList className="grid grid-cols-3 w-full sm:w-auto">
-                <TabsTrigger value="notion">
-                  <List className="h-4 w-4 mr-2" />
-                  <span className="hidden sm:inline">Notion View</span>
-                  <span className="sm:hidden">Notion</span>
-                </TabsTrigger>
-                <TabsTrigger value="chat">
-                  <MessageSquare className="h-4 w-4 mr-2" />
-                  <span className="hidden sm:inline">Chat View</span>
-                  <span className="sm:hidden">Chat</span>
-                </TabsTrigger>
-                <TabsTrigger value="table">
-                  <Table2 className="h-4 w-4 mr-2" />
-                  <span className="hidden sm:inline">Table View</span>
-                  <span className="sm:hidden">Table</span>
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
-          </div>
+          
           
           <Tabs defaultValue="notion" className="w-full">
             <TabsContent value="notion" className="mt-0">

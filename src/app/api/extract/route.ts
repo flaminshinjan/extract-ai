@@ -11,11 +11,10 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-// Helper function to sanitize URLs
+
 function sanitizeUrl(url: string): string {
   let sanitizedUrl = url.trim();
   
-  // Ensure URL has a protocol
   if (!sanitizedUrl.startsWith("http://") && !sanitizedUrl.startsWith("https://")) {
     sanitizedUrl = "https://" + sanitizedUrl;
   }
@@ -23,27 +22,26 @@ function sanitizeUrl(url: string): string {
   return sanitizedUrl;
 }
 
-// Function to truncate HTML content to avoid token limits
+
 function truncateHtml(html: string, maxLength: number = 100000): string {
   if (html.length <= maxLength) {
     return html;
   }
   
-  // Find a reasonable place to cut (end of a tag)
+
   const cutPoint = html.lastIndexOf('>', maxLength);
   return cutPoint > 0 ? html.substring(0, cutPoint + 1) : html.substring(0, maxLength);
 }
 
-// Server-side error formatting
 function formatServerError(error: unknown, url?: string): { error: string; status?: number } {
-  // Default error message
+
   let errorMessage = "Failed to extract content";
   let status = 500;
   
   if (error instanceof Error) {
     errorMessage = error.message;
     
-    // Check for specific error patterns
+
     if (errorMessage.includes("ENOTFOUND") || errorMessage.includes("ETIMEDOUT")) {
       errorMessage = `Could not connect to ${url || 'the URL'}. Please check that the URL is correct and accessible.`;
       status = 400;
@@ -64,33 +62,33 @@ function formatServerError(error: unknown, url?: string): { error: string; statu
   return { error: errorMessage, status };
 }
 
-// Function to extract content from unstructured Claude response
+
 function extractContentFromText(text: string): { title: string; summary: string; keyPoints: string[] } {
-  // Defaults
+
   let title = "Extracted Content";
   let summary = "Content extracted from URL";
   let keyPoints: string[] = [];
   
-  // Extract title
+
   const titleMatch = text.match(/Title:?\s*(.+?)(?:\n|$)/i) || 
                      text.match(/1\.?\s*(?:Title:?)?\s*(.+?)(?:\n|$)/i);
   if (titleMatch && titleMatch[1]) {
     title = titleMatch[1].trim();
   }
   
-  // Extract summary - use multi-line approach instead of /s flag
+
   const summaryMatch = text.match(/Summary:?\s*([\s\S]+?)(?:\n\n|\n\d|\n$)/i) ||
                        text.match(/2\.?\s*(?:Summary:?)?\s*([\s\S]+?)(?:\n\n|\n\d|\n$)/i);
   if (summaryMatch && summaryMatch[1]) {
     summary = summaryMatch[1].trim();
   }
   
-  // Extract key points
+
   const keyPointsSection = text.match(/Key Points:?\s*([\s\S]+?)(?:\n\n|$)/i) ||
                            text.match(/3\.?\s*(?:Key Points:?)?\s*([\s\S]+?)(?:\n\n|$)/i);
   
   if (keyPointsSection && keyPointsSection[1]) {
-    // Extract points with bullet points or numbered format
+
     const points = keyPointsSection[1].split(/\n\s*[-•*]\s*|\n\s*\d+\.?\s*/)
       .map(point => point.trim())
       .filter(point => point.length > 0);
@@ -103,9 +101,9 @@ function extractContentFromText(text: string): { title: string; summary: string;
   return { title, summary, keyPoints };
 }
 
-// Process content with Claude API
+
 async function processWithClaude(htmlContent: string, url: string, model: string = "claude-3-5-sonnet-20240620") {
-  // Truncate HTML to avoid token limits
+
   const truncatedHtml = truncateHtml(htmlContent, 80000);
   
   try {
@@ -141,32 +139,32 @@ async function processWithClaude(htmlContent: string, url: string, model: string
       temperature: 0.5,
     });
 
-    // Safely extract the text content
+
     const response = message.content[0].type === 'text' 
       ? (message.content[0] as { type: 'text', text: string }).text 
       : '';
     
     console.log("Claude response:", response);
     
-    // First try to parse as JSON if it happens to be in JSON format
+
     try {
-      // Try to find JSON within the response if it exists
+
       const jsonMatch = response.match(/\{[\s\S]*\}/);
       const jsonStr = jsonMatch ? jsonMatch[0] : '';
       
       if (jsonStr) {
         const extractedContent = JSON.parse(jsonStr);
         
-        // Validate the expected format
+        
         if (extractedContent.title && extractedContent.summary && Array.isArray(extractedContent.keyPoints)) {
           return extractedContent;
         }
       }
       
-      // If we get here, either no JSON was found or it didn't have the expected format
+      
       throw new Error("No valid JSON found");
     } catch (parseError) {
-      // Extract content from text format instead
+
       console.log("Parsing as structured text instead of JSON");
       return extractContentFromText(response);
     }
@@ -176,9 +174,9 @@ async function processWithClaude(htmlContent: string, url: string, model: string
   }
 }
 
-// Process content with OpenAI API
+
 async function processWithOpenAI(htmlContent: string, url: string, model: string = "gpt-4o") {
-  // Truncate HTML to avoid token limits
+
   const truncatedHtml = truncateHtml(htmlContent, 60000);
   
   try {
@@ -241,9 +239,9 @@ export async function POST(request: NextRequest) {
     const sanitizedUrl = sanitizeUrl(url);
 
     try {
-      // Fetch the content from the URL with a timeout
+    
       const { data: htmlContent } = await axios.get(sanitizedUrl, {
-        timeout: 15000, // 15 second timeout
+        timeout: 15000, 
         headers: {
           'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
           'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
@@ -251,7 +249,7 @@ export async function POST(request: NextRequest) {
         },
       });
 
-      // Check if HTML content is too large
+      
       if (htmlContent.length > 1000000) {
         return NextResponse.json(
           { error: "The webpage content is too large to process. Try a different URL with less content." },
@@ -259,7 +257,7 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      // Process with the selected AI provider
+      
       let extractedContent;
       
       if (provider === "anthropic") {

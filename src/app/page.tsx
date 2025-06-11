@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Sparkles, ArrowRight, CheckCircle, Brain, Rocket, Zap, Globe, Layout, Search, Link2, ExternalLink, Filter, MoreHorizontal, AlignLeft, MessageSquare, Table2, List } from "lucide-react";
 import { ThemeToggler } from "@/components/theme-toggler";
 
-// Dashboard Preview Component
+
 const DashboardPreview = () => {
   return (
     <div className="bg-card w-full h-full rounded-b-xl overflow-hidden">

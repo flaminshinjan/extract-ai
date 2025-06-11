@@ -5,17 +5,17 @@ export interface ErrorResponse {
 }
 
 export const formatErrorMessage = (error: unknown, url?: string): ErrorResponse => {
-  // Default error response
+  
   const defaultResponse: ErrorResponse = {
     error: "An unexpected error occurred",
     url,
   };
 
-  // Handle Error objects
+  
   if (error instanceof Error) {
     const errorMessage = error.message;
     
-    // Handle network errors
+    
     if (errorMessage.includes("ENOTFOUND") || errorMessage.includes("ETIMEDOUT")) {
       return {
         error: `Could not connect to ${url || 'the URL'}. Please check that the URL is correct and accessible.`,
@@ -23,7 +23,7 @@ export const formatErrorMessage = (error: unknown, url?: string): ErrorResponse 
       };
     }
     
-    // Handle HTTP errors
+    
     if (errorMessage.includes("status code")) {
       const statusMatch = errorMessage.match(/status code (\d+)/);
       const status = statusMatch ? parseInt(statusMatch[1], 10) : undefined;
@@ -61,7 +61,7 @@ export const formatErrorMessage = (error: unknown, url?: string): ErrorResponse 
       }
     }
     
-    // Parse errors
+    
     if (errorMessage.includes("parse") || errorMessage.includes("JSON")) {
       return {
         error: "Failed to parse the content. This might not be a valid webpage or the content format is unsupported.",
@@ -69,14 +69,14 @@ export const formatErrorMessage = (error: unknown, url?: string): ErrorResponse 
       };
     }
     
-    // General error with the original message
+    
     return {
       error: errorMessage,
       url,
     };
   }
   
-  // If error is a string
+  
   if (typeof error === "string") {
     return {
       error,

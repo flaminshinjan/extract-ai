@@ -25,7 +25,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
   useEffect(() => {
-    // Check for active session on component mount
+    
     async function loadSession() {
       setLoading(true);
       const { data, error } = await getSession();
@@ -42,7 +42,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     loadSession();
 
-    // Set up auth state change listener
+    
     const { data: authListener } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         if (session?.user) {
@@ -67,7 +67,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const handleSignIn = async (email: string, password: string) => {
     const { error } = await signIn(email, password);
     if (!error) {
-      // Use window.location for a full page refresh to ensure session is properly registered
+      
       window.location.href = "/content";
     }
     return { error };
@@ -76,7 +76,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const handleSignOut = async () => {
     const { error } = await signOut();
     if (!error) {
-      // Use window.location for a full page refresh
+      
       window.location.href = "/auth/sign-in";
     }
     return { error };
