@@ -12,11 +12,10 @@ import {
   Search,
   ChevronLeft,
   ChevronRight,
-  GripVertical,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { Input } from "@/components/ui/input";
 
 interface NotionTableProps {
@@ -29,10 +28,10 @@ interface ColumnWidth {
 }
 
 const defaultColumnWidths = {
-  title: 33,
-  keyPoints: 33,
-  summary: 28,
-  actions: 6
+  title: 20,
+  keyPoints: 40,
+  summary: 35,
+  actions: 5
 };
 
 export function NotionTable({ items, onDeleteItem }: NotionTableProps) {
@@ -40,79 +39,9 @@ export function NotionTable({ items, onDeleteItem }: NotionTableProps) {
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [resizing, setResizing] = useState<string | null>(null);
-  const [columnWidths, setColumnWidths] = useState<ColumnWidth>(defaultColumnWidths);
-  const [startX, setStartX] = useState(0);
-  const [startWidth, setStartWidth] = useState(0);
+  const [columnWidths] = useState<ColumnWidth>(defaultColumnWidths);
   const tableRef = useRef<HTMLTableElement>(null);
   const itemsPerPage = 5;
-
-  // Column resizing handlers
-  const handleResizeStart = (e: React.MouseEvent, columnId: string) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setResizing(columnId);
-    setStartX(e.clientX);
-    setStartWidth(columnWidths[columnId]);
-    
-    document.addEventListener('mousemove', handleResizeMove);
-    document.addEventListener('mouseup', handleResizeEnd);
-  };
-
-  const handleResizeMove = (e: MouseEvent) => {
-    if (!resizing) return;
-    
-    const tableWidth = tableRef.current?.clientWidth || 1000;
-    const diff = e.clientX - startX;
-    const percentageDiff = (diff / tableWidth) * 100;
-    
-    // Calculate new width but set minimum width constraints
-    const minWidth = 10; // Minimum percentage width
-    const newWidth = Math.max(minWidth, startWidth + percentageDiff);
-    
-    setColumnWidths(prev => {
-      // Create a copy of previous widths
-      const newWidths = { ...prev };
-      
-      // Calculate how much we're changing the width by
-      const delta = newWidth - prev[resizing];
-      
-      // If we're making a column wider, take space from the next column
-      // If we're making a column narrower, give space to the next column
-      const columnsArray = Object.keys(prev);
-      const currentIndex = columnsArray.indexOf(resizing);
-      const nextColumn = columnsArray[currentIndex + 1];
-      
-      // Update the current column width
-      newWidths[resizing] = newWidth;
-      
-      // Only adjust the next column if it exists and would stay above min width
-      if (nextColumn && prev[nextColumn] - delta >= minWidth) {
-        newWidths[nextColumn] = prev[nextColumn] - delta;
-      } else if (nextColumn) {
-        // If next column would be too small, adjust current column instead
-        const availableDelta = prev[nextColumn] - minWidth;
-        newWidths[resizing] = prev[resizing] + availableDelta;
-        newWidths[nextColumn] = minWidth;
-      }
-      
-      return newWidths;
-    });
-  };
-
-  const handleResizeEnd = () => {
-    setResizing(null);
-    document.removeEventListener('mousemove', handleResizeMove);
-    document.removeEventListener('mouseup', handleResizeEnd);
-  };
-
-  // Clean up event listeners
-  useEffect(() => {
-    return () => {
-      document.removeEventListener('mousemove', handleResizeMove);
-      document.removeEventListener('mouseup', handleResizeEnd);
-    };
-  }, [resizing]);
 
   const handleSort = (field: keyof ContentItem) => {
     if (sortField === field) {
@@ -160,7 +89,6 @@ export function NotionTable({ items, onDeleteItem }: NotionTableProps) {
 
   const columnStyle = (columnId: string) => ({
     width: `${columnWidths[columnId]}%`,
-    position: 'relative' as const
   });
   
   if (items.length === 0) {
@@ -185,8 +113,8 @@ export function NotionTable({ items, onDeleteItem }: NotionTableProps) {
         </div>
       </div>
       
-      <div className="rounded-md border overflow-hidden relative">
-        <table ref={tableRef} className="w-full text-sm">
+      <div className="rounded-md border overflow-x-auto relative">
+        <table ref={tableRef} className="w-full text-sm table-fixed">
           <thead className="bg-muted/50">
             <tr className="border-b">
               <th style={columnStyle('title')} className="py-3 px-4 text-left font-medium">
@@ -224,15 +152,15 @@ export function NotionTable({ items, onDeleteItem }: NotionTableProps) {
               <tr key={item.id} className="border-b hover:bg-muted/30">
                 <td style={columnStyle('title')} className="py-3 px-4 align-top">
                   <div className="flex flex-col">
-                    <div className="font-medium">{item.title}</div>
-                    <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
+                    <div className="font-medium break-words">{item.title}</div>
+                    <div className="flex flex-wrap items-center gap-2 mt-1 text-xs text-muted-foreground">
                       <a
                         href={item.url}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="hover:underline flex items-center gap-1 w-fit"
                       >
-                        <span className="truncate max-w-[200px]">{item.url}</span>
+                        <span className="truncate max-w-[150px] sm:max-w-[200px]">{item.url}</span>
                         <ExternalLink className="h-3 w-3 flex-shrink-0" />
                       </a>
                       
@@ -259,13 +187,13 @@ export function NotionTable({ items, onDeleteItem }: NotionTableProps) {
                     {item.keyPoints.map((point, index) => (
                       <div key={index} className="flex items-start gap-2">
                         <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
-                        <p className="text-xs">{point}</p>
+                        <p className="text-xs break-words">{point}</p>
                       </div>
                     ))}
                   </div>
                 </td>
                 <td style={columnStyle('summary')} className="py-3 px-4 align-top">
-                  <p className="text-xs">{item.summary}</p>
+                  <p className="text-xs break-words">{item.summary}</p>
                 </td>
                 <td style={columnStyle('actions')} className="py-3 px-4 text-center align-top">
                   <Button
@@ -282,45 +210,11 @@ export function NotionTable({ items, onDeleteItem }: NotionTableProps) {
             ))}
           </tbody>
         </table>
-        
-        {/* Resizable column dividers that span the entire table height */}
-        <div 
-          className={cn(
-            "absolute top-0 w-2 h-full cursor-col-resize z-10 group",
-            resizing === 'title' ? "bg-primary/10" : "hover:bg-primary/5"
-          )}
-          style={{ left: `calc(${columnWidths.title}% - 1px)` }}
-          onMouseDown={(e) => handleResizeStart(e, 'title')}
-        >
-          <div className="absolute right-0.5 top-0 h-full w-0.5 bg-border group-hover:bg-primary/50" />
-        </div>
-        
-        <div 
-          className={cn(
-            "absolute top-0 w-2 h-full cursor-col-resize z-10 group",
-            resizing === 'keyPoints' ? "bg-primary/10" : "hover:bg-primary/5"
-          )}
-          style={{ left: `calc(${columnWidths.title + columnWidths.keyPoints}% - 1px)` }}
-          onMouseDown={(e) => handleResizeStart(e, 'keyPoints')}
-        >
-          <div className="absolute right-0.5 top-0 h-full w-0.5 bg-border group-hover:bg-primary/50" />
-        </div>
-        
-        <div 
-          className={cn(
-            "absolute top-0 w-2 h-full cursor-col-resize z-10 group",
-            resizing === 'summary' ? "bg-primary/10" : "hover:bg-primary/5"
-          )}
-          style={{ left: `calc(${columnWidths.title + columnWidths.keyPoints + columnWidths.summary}% - 1px)` }}
-          onMouseDown={(e) => handleResizeStart(e, 'summary')}
-        >
-          <div className="absolute right-0.5 top-0 h-full w-0.5 bg-border group-hover:bg-primary/50" />
-        </div>
       </div>
       
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-between py-4">
+        <div className="flex flex-col sm:flex-row items-center justify-between py-4 gap-2">
           <div className="text-sm text-muted-foreground">
             Showing {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, sortedAndFilteredItems.length)} of {sortedAndFilteredItems.length} items
           </div>

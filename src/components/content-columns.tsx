@@ -19,6 +19,7 @@ export const columns: ColumnDef<ContentItem>[] = [
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="font-medium"
         >
           Title
           <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -30,16 +31,16 @@ export const columns: ColumnDef<ContentItem>[] = [
       const url = row.original.url;
       
       return (
-        <div className="font-medium">
-          <div className="truncate max-w-[200px]">{title}</div>
+        <div className="font-medium min-w-[120px]">
+          <div className="break-words">{title}</div>
           <a
             href={url}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-xs text-muted-foreground hover:underline flex items-center gap-1 mt-1"
+            className="text-xs text-muted-foreground hover:underline flex items-center gap-1 mt-1 w-fit"
           >
-            <span className="truncate max-w-[180px]">{url}</span>
-            <ExternalLink className="h-3 w-3" />
+            <span className="truncate max-w-[120px] sm:max-w-[180px]">{url}</span>
+            <ExternalLink className="h-3 w-3 flex-shrink-0" />
           </a>
         </div>
       );
@@ -52,10 +53,10 @@ export const columns: ColumnDef<ContentItem>[] = [
       const summary = row.getValue("summary") as string;
       
       return (
-        <div className="truncate max-w-[300px]">
+        <div className="min-w-[100px]">
           <HoverCard>
             <HoverCardTrigger asChild>
-              <span className="cursor-help">{summary}</span>
+              <span className="cursor-help line-clamp-2">{summary}</span>
             </HoverCardTrigger>
             <HoverCardContent className="w-80">
               <p className="text-sm">{summary}</p>
@@ -74,11 +75,11 @@ export const columns: ColumnDef<ContentItem>[] = [
       const remainingCount = keyPoints.length - 1;
       
       return (
-        <div>
+        <div className="min-w-[100px]">
           <HoverCard>
             <HoverCardTrigger asChild>
               <div className="cursor-help">
-                <div className="truncate max-w-[200px]">{displayPoints[0]}</div>
+                <div className="line-clamp-2">{displayPoints[0]}</div>
                 {remainingCount > 0 && (
                   <span className="text-xs text-muted-foreground">
                     +{remainingCount} more
@@ -107,7 +108,7 @@ export const columns: ColumnDef<ContentItem>[] = [
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           className="whitespace-nowrap"
         >
-          Extracted At
+          Date
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
