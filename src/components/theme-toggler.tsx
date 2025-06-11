@@ -9,7 +9,7 @@ export function ThemeToggler() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = React.useState(false);
 
-  // Avoid hydration mismatch by rendering only after mount
+  
   React.useEffect(() => {
     setMounted(true);
   }, []);

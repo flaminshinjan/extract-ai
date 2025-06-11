@@ -14,7 +14,7 @@ export function getStoredContent(): ContentItem[] {
     const parsedData = JSON.parse(storedData);
     if (!Array.isArray(parsedData)) return [];
     
-    // Fix dates that were stringified in JSON
+    
     return parsedData.map(item => ({
       ...item,
       extractedAt: new Date(item.extractedAt)
@@ -29,16 +29,16 @@ export function storeContent(item: ContentItem): void {
   if (typeof window === "undefined") return;
 
   try {
-    // Get existing content
+    
     const existingContent = getStoredContent();
     
-    // Remove any existing item with the same ID
+    
     const filteredContent = existingContent.filter(existing => existing.id !== item.id);
     
-    // Add the new item to the beginning
+    
     const updatedContent = [item, ...filteredContent];
     
-    // Save to localStorage
+    
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedContent));
   } catch (error) {
     console.error("Error storing content:", error);

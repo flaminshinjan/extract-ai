@@ -1,10 +1,10 @@
 import { createClient } from '@supabase/supabase-js';
 
-// Initialize the Supabase client
+
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
 
-// Create the Supabase client with explicit cookie settings
+
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     persistSession: true,
@@ -13,7 +13,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   }
 });
 
-// Authentication helpers
+
 export async function signUp(email: string, password: string) {
   const { data, error } = await supabase.auth.signUp({
     email,
@@ -28,9 +28,9 @@ export async function signIn(email: string, password: string) {
     password,
   });
   
-  // If sign-in was successful, redirect to content page
+  
   if (!error && data.session) {
-    // Store session in localStorage as a backup
+    
     if (typeof window !== 'undefined') {
       localStorage.setItem('supabase-auth', JSON.stringify(data.session));
     }
@@ -40,7 +40,7 @@ export async function signIn(email: string, password: string) {
 }
 
 export async function signOut() {
-  // Clear localStorage on sign out
+  
   if (typeof window !== 'undefined') {
     localStorage.removeItem('supabase-auth');
   }

@@ -65,14 +65,14 @@ export default function SignIn() {
   const onSubmit = async (data: SignInFormValues) => {
     setIsLoading(true);
     try {
-      // Direct use of Supabase client
+      
       const { data: authData, error } = await supabase.auth.signInWithPassword({
         email: data.email,
         password: data.password,
       });
       
       if (error) {
-        // Check for email not confirmed error
+        
         if (error.message?.includes("Email not confirmed") || 
             error.message?.includes("not verified") ||
             error.message?.includes("not confirmed")) {
@@ -83,14 +83,14 @@ export default function SignIn() {
         }
         setIsLoading(false);
       } else {
-        // Store auth data in localStorage
+        
         localStorage.setItem('auth-user', JSON.stringify(authData.user));
         localStorage.setItem('auth-session', JSON.stringify(authData.session));
         
         toast.success("Sign in successful! Redirecting...");
         setRedirecting(true);
         
-        // Force navigation after a short delay
+        
         setTimeout(() => {
           window.location.href = "/content";
         }, 1000);
@@ -228,12 +228,7 @@ export default function SignIn() {
           </form>
         )}
         
-        {/* Direct link to content page for testing */}
-        <div className="text-center mt-4">
-          <Link href="/content" className="text-xs text-gray-400 hover:text-gray-500">
-            Bypass authentication (dev only)
-          </Link>
-        </div>
+        
       </div>
     </div>
   );
