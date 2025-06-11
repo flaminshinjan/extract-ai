@@ -7,6 +7,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
+import { MailCheck } from "lucide-react";
 
 const signUpSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -24,7 +25,8 @@ type SignUpFormValues = z.infer<typeof signUpSchema>;
 
 export default function SignUp() {
   const [isLoading, setIsLoading] = useState(false);
-  const [redirecting, setRedirecting] = useState(false);
+  const [verificationEmailSent, setVerificationEmailSent] = useState(false);
+  const [userEmail, setUserEmail] = useState("");
   
   const {
     register,
@@ -42,10 +44,13 @@ export default function SignUp() {
   const onSubmit = async (data: SignUpFormValues) => {
     setIsLoading(true);
     try {
-      // Direct use of Supabase client
+      // Configure Supabase to send verification emails
       const { data: authData, error } = await supabase.auth.signUp({
         email: data.email,
         password: data.password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/verify-email`,
+        },
       });
       
       if (error) {
@@ -53,29 +58,8 @@ export default function SignUp() {
         setIsLoading(false);
       } else {
         toast.success("Account created successfully!");
-        
-        // Sign in immediately
-        const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
-          email: data.email,
-          password: data.password,
-        });
-        
-        if (signInError) {
-          toast.error("Account created but couldn't sign in automatically");
-          window.location.href = "/auth/sign-in";
-        } else {
-          // Store auth data in localStorage
-          localStorage.setItem('auth-user', JSON.stringify(signInData.user));
-          localStorage.setItem('auth-session', JSON.stringify(signInData.session));
-          
-          setRedirecting(true);
-          toast.success("Signed in! Redirecting...");
-          
-          // Force navigation after a short delay
-          setTimeout(() => {
-            window.location.href = "/content";
-          }, 1000);
-        }
+        setUserEmail(data.email);
+        setVerificationEmailSent(true);
       }
     } catch (error: any) {
       toast.error(error.message || "An unexpected error occurred");
@@ -101,13 +85,48 @@ export default function SignUp() {
           </p>
         </div>
         
-        {redirecting ? (
-          <div className="text-center p-4 bg-green-50 border border-green-200 rounded-md">
-            <p className="text-green-800">Account created and signed in! Redirecting to content page...</p>
-            <p className="mt-2 text-sm text-green-600">
-              If you're not redirected automatically, {" "}
-              <a href="/content" className="font-medium underline">click here</a>
-            </p>
+        {verificationEmailSent ? (
+          <div className="text-center space-y-4">
+            <div className="flex justify-center">
+              <div className="rounded-full bg-blue-100 p-3">
+                <MailCheck className="h-8 w-8 text-blue-600" />
+              </div>
+            </div>
+            
+            <h2 className="text-xl font-semibold text-foreground">Verify your email</h2>
+            
+            <div className="p-4 bg-blue-50 border border-blue-200 rounded-md">
+              <p className="text-blue-800">
+                We've sent a verification email to <span className="font-medium">{userEmail}</span>
+              </p>
+              <p className="mt-2 text-sm text-blue-600">
+                Please check your inbox and click the verification link to complete your registration.
+              </p>
+            </div>
+            
+            <div className="mt-4 text-sm text-muted-foreground">
+              <p>
+                Once verified, you'll be able to sign in to your account.
+              </p>
+              <p className="mt-2">
+                Didn't receive an email? Check your spam folder or{" "}
+                <button 
+                  onClick={() => window.location.reload()}
+                  className="text-primary hover:underline"
+                >
+                  try again
+                </button>
+              </p>
+            </div>
+            
+            <div className="mt-4">
+              <Link 
+                href="/auth/sign-in" 
+                className="text-primary hover:underline"
+              >
+                Return to sign in
+              </Link>
+            </div>
           </div>
         ) : (
           <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
@@ -175,13 +194,6 @@ export default function SignUp() {
             </div>
           </form>
         )}
-        
-        {/* Direct link to content page for testing */}
-        <div className="text-center mt-4">
-          <Link href="/content" className="text-xs text-gray-400 hover:text-gray-500">
-            Go directly to content page (dev only)
-          </Link>
-        </div>
       </div>
     </div>
   );

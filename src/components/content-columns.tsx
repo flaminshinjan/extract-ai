@@ -131,19 +131,23 @@ export const columns: ColumnDef<ContentItem>[] = [
       const item = row.original;
       
       return (
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => {
-            // Will be implemented in content-page.tsx
-            const event = new CustomEvent('delete-content', { detail: item.id });
-            window.dispatchEvent(event);
-          }}
-          className="h-8 w-8"
-        >
-          <Trash2 className="h-4 w-4" />
-        </Button>
+        <div className="flex justify-center min-w-[50px]">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => {
+              // Will be implemented in content-page.tsx
+              const event = new CustomEvent('delete-content', { detail: item.id });
+              window.dispatchEvent(event);
+            }}
+            className="h-8 w-8"
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        </div>
       );
     },
+    enableSorting: false,
+    size: 50,
   },
 ];
